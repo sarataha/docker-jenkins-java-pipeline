@@ -2,6 +2,7 @@ package org.example.pipeline;
 
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.CouchbaseCluster;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author arungupta
@@ -16,8 +17,8 @@ public class Database {
             System.out.println(System.getenv());
             String host = System.getenv("DB_URI");
             if (null == host) {
-                System.err.println("Invalid host: " + host);
-                System.exit(1);
+                host = "localhost";
+                System.out.println("Invalid host, setting to " + host);
             }
             System.out.println("Using host: " + host);
             cluster = CouchbaseCluster.create(host);
@@ -27,7 +28,7 @@ public class Database {
 
     public static Bucket getBucket(String bucketName) {
         if (null == bucket) {
-            bucket = getCluster().openBucket(bucketName);
+            bucket = getCluster().openBucket(bucketName, 30, TimeUnit.SECONDS);
         }
         return bucket;
     }
